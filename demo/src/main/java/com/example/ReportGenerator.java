@@ -1,104 +1,74 @@
 package com.example;
 
 // Required imports
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-// The target class that will have high ATFD
 public class ReportGenerator {
-    // This class will access attributes from multiple unrelated classes
+    // Local attributes
+    private String reportTitle;
+    private Date generationDate;
+    private String reportFormat;
     
-    public void generateMonthlyReport(Department department) {
-        // Accessing Employee class attributes (1st unrelated class)
-        List<Employee> employees = department.getEmployees();
-        for (Employee employee : employees) {
-            // Direct access to attributes from Employee class
-            String name = employee.name;  // Direct field access
-            double salary = employee.getSalary();  // Accessor method
-            
-            // Accessing Project class attributes (2nd unrelated class)
-            for (Project project : employee.getProjects()) {
-                // Direct access to attributes from Project class
-                String projectName = project.name;  // Direct field access
-                Date deadline = project.getDeadline();  // Accessor method
-                
-                // Accessing Client class attributes (3rd unrelated class)
-                Client client = project.getClient();
-                String clientName = client.companyName;  // Direct field access
-                String contactPerson = client.getContactPerson();  // Accessor method
-                
-                // Accessing Budget class attributes (4th unrelated class)
-                Budget budget = project.getBudget();
-                double allocatedAmount = budget.amount;  // Direct field access
-                double expenses = budget.getCurrentExpenses();  // Accessor method
-                
-                // Using all these foreign attributes
-                System.out.println("Employee: " + name + " is working on project: " + projectName);
-                System.out.println("Client: " + clientName + " (Contact: " + contactPerson + ")");
-                System.out.println("Budget: " + allocatedAmount + " (Spent: " + expenses + ")");
-                System.out.println("Deadline: " + deadline);
-            }
-        }
+    // This method has low LAA (poor locality)
+    public String generateFinancialReport(Customer customer, Account account, Transaction transaction) {
+        StringBuilder report = new StringBuilder();
+        
+        // Access to LOCAL attributes - count: 3
+        report.append(this.reportTitle).append("\n");
+        report.append("Generated on: ").append(this.generationDate).append("\n");
+        report.append("Format: ").append(this.reportFormat).append("\n\n");
+        
+        // Access to FOREIGN attributes - count: 10
+        
+        // Customer attributes - 3
+        report.append("Customer: ").append(customer.getName()).append("\n");
+        report.append("ID: ").append(customer.getId()).append("\n");
+        report.append("Since: ").append(customer.getRegistrationDate()).append("\n\n");
+        
+        // Account attributes - 4
+        report.append("Account Number: ").append(account.getNumber()).append("\n");
+        report.append("Type: ").append(account.getType()).append("\n");
+        report.append("Balance: $").append(account.getBalance()).append("\n");
+        report.append("Status: ").append(account.getStatus()).append("\n\n");
+        
+        // Transaction attributes - 3
+        report.append("Last Transaction: #").append(transaction.getId()).append("\n");
+        report.append("Amount: $").append(transaction.getAmount()).append("\n");
+        report.append("Date: ").append(transaction.getDate()).append("\n");
+        
+        return report.toString();
     }
 }
 
-// Supporting classes
-class Department {
-    private List<Employee> employees = new ArrayList<>();
+// Foreign classes
+class Customer {
+    private String name;
+    private String id;
+    private Date registrationDate;
     
-    public List<Employee> getEmployees() {
-        return employees;
-    }
+    public String getName() { return name; }
+    public String getId() { return id; }
+    public Date getRegistrationDate() { return registrationDate; }
 }
 
-class Employee {
-    public String name;  // Public field for direct access
-    private double salary;
-    private List<Project> projects = new ArrayList<>();
+class Account {
+    private String number;
+    private String type;
+    private double balance;
+    private String status;
     
-    public double getSalary() {
-        return salary;
-    }
-    
-    public List<Project> getProjects() {
-        return projects;
-    }
+    public String getNumber() { return number; }
+    public String getType() { return type; }
+    public double getBalance() { return balance; }
+    public String getStatus() { return status; }
 }
 
-class Project {
-    public String name;  // Public field for direct access
-    private Date deadline;
-    private Client client;
-    private Budget budget;
+class Transaction {
+    private String id;
+    private double amount;
+    private Date date;
     
-    public Date getDeadline() {
-        return deadline;
-    }
-    
-    public Client getClient() {
-        return client;
-    }
-    
-    public Budget getBudget() {
-        return budget;
-    }
-}
-
-class Client {
-    public String companyName;  // Public field for direct access
-    private String contactPerson;
-    
-    public String getContactPerson() {
-        return contactPerson;
-    }
-}
-
-class Budget {
-    public double amount;  // Public field for direct access
-    private double currentExpenses;
-    
-    public double getCurrentExpenses() {
-        return currentExpenses;
-    }
+    public String getId() { return id; }
+    public double getAmount() { return amount; }
+    public Date getDate() { return date; }
 }
